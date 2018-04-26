@@ -28,8 +28,8 @@ ostream &operator<<(ostream &outDev, PHANSO x)
 	if ((x.tu == 0) || (x.mau == 1)) outDev << x.tu << " ";
 	else
 	if (x.tu%x.mau == 0) outDev << x.tu / x.mau << " ";
-	else 
-	outDev << x.tu << "/" << x.mau << " ";
+	else
+		outDev << x.tu << "/" << x.mau << " ";
 	return outDev;
 }
 
@@ -104,19 +104,102 @@ void insertBefore(node q, PHANSO k)
 }
 
 
-void Insert(node head, node tail, int p, PHANSO t)
+void Insert(node &head, node &tail, int p, PHANSO t)
 {
 	if (p == 0) insertBefore(head, t);
 	else
 	{
 		node q = head;
-		int i = 1;
+		int i = 0;
 		while ((q->next != NULL) && (i < p))
 		{
 			q = q->next;
 			i++;
 		}
 		insertAfter(q, t);
+		if (q == tail) tail = q->next;
+	}
+}
+
+int length(node head)
+{
+	node q;
+	int count = 0;
+	for (q = head; q; q = q->next)
+		count++;
+	return count;
+}
+
+void deleteBegin(node &head, node &tail)
+{
+	node q;
+	if (head == tail)
+	{
+		free(head);
+		head = tail = NULL;
+	}
+	else
+	{
+		q = head;
+		head = head->next;
+		free(q);
+	}
+}
+
+void deleteEnd(node &head, node &tail)
+{
+	node q;
+	if (head == tail)
+	{
+		free(head);
+		head = tail = NULL;
+	}
+	else
+	{
+		for (q = head; q->next != tail; q = q->next);
+		free(tail);
+		tail = q;
+		q->next = NULL;
+	}
+}
+
+void deleteMiddle(node q)
+{
+	node p;
+	p = q->next;
+	*q = *p;
+	free(p);
+}
+
+void DeleteAt(node &head, node &tail, int pos)
+{
+	int n, i;
+	node q;
+	n = length(head);
+	if ((pos < 0) || (pos >= n))
+	{
+		cout << "Vi tri khong phu hop" << endl;
+		return;
+	}
+	if (pos == 0) deleteBegin(head, tail);
+	else
+	if (pos == n - 1) deleteEnd(head, tail);
+	else
+	{
+		for (i = 0, q = head; i < pos; i++, q = q->next);
+		if (q->next = tail) tail = q;
+		deleteMiddle(q);
+	}
+}
+
+void DestroyList(node &head)
+{
+	node q;
+	while (head)
+	{
+		q = head;
+		head = head->next;
+		free(q);
 	}
 }
 
@@ -135,5 +218,14 @@ void main()
 	cin >> p;
 	Insert(head, tail, p, t);
 	printlist(head);
+	cout << "Nhap vao vi tri can xoa: " << endl;
+	cin >> p;
+	DeleteAt(head, tail, p);
+	printlist(head);
+	cout << "Nhan enter de huy toan bo danh sach...";
+	cin.ignore();
+	cin.get();
+	DestroyList(head);
+	cout << "Da huy danh sach!" << endl;
 	system("pause");
 }
